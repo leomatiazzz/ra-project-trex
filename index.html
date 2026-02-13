@@ -22,7 +22,7 @@
     </style>
 
     <script>
-        AFRAME.registerComponent('interactable-model', {
+        AFRAME.registerComponent('gesture-tap', {
             init: function () {
                 var el = this.el;
                 var isScaled = false;
@@ -76,13 +76,16 @@
     <a-scene embedded arjs="sourceType: webcam;">
 
         <!-- Câmera controlada pelo AR.js -->
-        <a-entity camera></a-entity>
+        <a-entity camera>
+            <a-cursor rayOrigin="mouse" fuse="false" raycaster="objects: .clickable">
+            </a-cursor>
+        </a-entity>
 
         <!-- Marcador Hiro padrão -->
         <a-marker preset="hiro">
 
             <!-- Modelo GLB com interações e animation-mixer -->
-            <a-entity class="clickable" interactable-model gltf-model="url(tiranosaurus.glb)" scale="0.6 0.6 0.6"
+            <a-entity class="clickable" gesture-tap gltf-model="url(tiranosaurus.glb)" scale="0.6 0.6 0.6"
                 position="0 0 0" rotation="0 0 0" animation-mixer="clip:*; loop: repeat;">
             </a-entity>
 

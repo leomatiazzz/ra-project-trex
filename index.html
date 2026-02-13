@@ -23,20 +23,109 @@
                 var el = this.el;
                 var scale = el.getAttribute('scale');
                 var originalScale = { x: scale.x, y: scale.y, z: scale.z };
+                var position = el.getAttribute('position');
+                var originalPosition = { x: position.x, y: position.y, z: position.z };
                 var isScaled = false;
+                var isHolding = false;
+                var lastClickTime = 0;
 
+                // Interação 1: Clique simples para aumentar/diminuir escala
                 el.addEventListener('click', function () {
-                    if (!isScaled) {
-                        el.setAttribute('scale', {
-                            x: originalScale.x * 1.4,
-                            y: originalScale.y * 1.4,
-                            z: originalScale.z * 1.4
-                        });
-                        isScaled = true;
-                    } else {
-                        el.setAttribute('scale', originalScale);
-                        isScaled = false;
+                    var currentTime = new Date().getTime();
+                    var isDoubleClick = (currentTime - lastClickTime) < 300;
+                    lastClickTime = currentTime;
+
+                    if (!isDoubleClick) {
+                        if (!isScaled) {
+                            el.setAttribute('scale', {
+                                x: originalScale.x * 1.4,
+                                y: originalScale.y * 1.4,
+                                z: originalScale.z * 1.4
+                            });
+                            isScaled = true;
+                        } else {
+                            el.setAttribute('scale', originalScale);
+                            isScaled = false;
+                        }
                     }
+                });
+
+                // Interação 2: Duplo clique para disparar animação interna (animation-mixer)
+                el.addEventListener('click', function () {
+                    var currentTime = new Date().getTime();
+                    if ((currentTime - lastClickTime) < 300) {
+                        // Duplo clique - dispara rotação contínua
+                        el.setAttribute('animation', {
+                            property: 'rotation',
+                            from: '0 0 0',
+                            to: '0 360 0',
+                            dur: 2000,
+                            easing: 'linear',
+                            loop: 'true'
+                        });
+                    }
+                });
+
+                // Interação 3: Pressionar e segurar (mousedown/mouseup) para mover Y
+                el.addEventListener('mousedown', function () {
+                    isHolding = true;
+                });
+
+                document.addEventListener('mouseup', function () {
+                    if (isHolding) {
+                        isHolding = false;
+                        // Volta para posição original
+                        el.setAttribute('position', originalPosition);
+                    }
+                });
+
+                el.addEventListener('mousemove', function (event) {
+                    if (isHolding) {
+                        var newY = originalPosition.y + (event.detail.intersection.point.y * 0.5);
+                        el.setAttribute('position', {
+                            x: originalPosition.x,
+                            y: Math.min(Math.max(newY, originalPosition.y - 1), originalPosition.y + 1),
+                            z: originalPosition.z
+                        });
+                    }
+                });
+
+                // Interação 4: Toque rápido (gesture-tap) para animação de "pulso"
+                el.addEventListener('fusing', function () {
+                    // Animação de pulso
+                    el.setAttribute('animation__pulse', {
+                        property: 'scale',
+                        from: {
+                            x: originalScale.x,
+                            y: originalScale.y,
+                            z: originalScale.z
+                        },
+                        to: {
+                            x: originalScale.x * 1.2,
+                            y: originalScale.y * 1.2,
+                            z: originalScale.z * 1.2
+                        },
+                        dur: 300,
+                        easing: 'easeInOutQuad'
+                    });
+
+                    setTimeout(function () {
+                        el.setAttribute('animation__pulse', {
+                            property: 'scale',
+                            from: {
+                                x: originalScale.x * 1.2,
+                                y: originalScale.y * 1.2,
+                                z: originalScale.z * 1.2
+                            },
+                            to: {
+                                x: originalScale.x,
+                                y: originalScale.y,
+                                z: originalScale.z
+                            },
+                            dur: 300,
+                            easing: 'easeInOutQuad'
+                        });
+                    }, 300);
                 });
             }
         });

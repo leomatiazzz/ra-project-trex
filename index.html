@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
 
 <head>
@@ -7,7 +7,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="apple-mobile-web-app-capable" content="yes">
 
+    <!-- A-Frame núcleo (renderização 3D) -->
     <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+    <!-- aframe-extras: habilita animation-mixer para clipes GLB -->
+    <script src="https://cdn.jsdelivr.net/npm/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
+    <!-- AR.js para A-Frame (rastreamento marker-based) -->
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
 
     <style>
@@ -50,7 +54,7 @@
                     }
                 });
 
-                // Interação 2: Duplo clique para disparar animação interna (animation-mixer)
+                // Interação 2: Duplo clique para disparar rotação contínua
                 el.addEventListener('click', function () {
                     var currentTime = new Date().getTime();
                     if ((currentTime - lastClickTime) < 300) {
@@ -90,7 +94,7 @@
                     }
                 });
 
-                // Interação 4: Toque rápido (gesture-tap) para animação de "pulso"
+                // Interação 4: Toque longo (fusing) para animação de "pulso"
                 el.addEventListener('fusing', function () {
                     // Animação de pulso
                     el.setAttribute('animation__pulse', {
@@ -132,20 +136,27 @@
     </script>
 </head>
 
-<body>
+<body style="margin:0; overflow:hidden;">
 
-    <a-scene embedded arjs="sourceType: webcam;" cursor="rayOrigin: mouse" raycaster="objects: .clickable">
+    <!-- Cena RA embutida que usa a webcam -->
+    <a-scene embedded arjs="sourceType: webcam;">
 
-        <a-entity light="type: ambient; color: #BBB; intensity: 6"></a-entity>
-        <a-entity light="type: directional; intensity: 10" position="-10 -20 30"></a-entity>
-
+        <!-- Câmera controlada pelo AR.js -->
         <a-entity camera></a-entity>
 
+        <!-- Marcador Hiro padrão -->
         <a-marker preset="hiro">
 
-            <a-entity class="clickable" interactable-model gltf-model="url(./tiranosaurus.glb)" scale="0.3 0.3 0.3"
-                rotation="-90 0 0" position="0 0 0">
+            <!-- Modelo GLB com interações e animation-mixer -->
+            <a-entity class="clickable" interactable-model gltf-model="url(./tiranosaurus.glb)" scale="1.5 1.5 1.5"
+                position="0 0 0" rotation="0 0 0" animation-mixer="clip:*; loop: repeat;">
             </a-entity>
+
+            <!-- Luz ambiente suave -->
+            <a-light type="ambient" color="#BBB"></a-light>
+
+            <!-- Luz direcional para realçar o modelo -->
+            <a-light type="directional" intensity="0.8" position="-1 4 5"></a-light>
 
         </a-marker>
 

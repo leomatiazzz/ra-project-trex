@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Projeto AR - Sapo Sci-Fi</title>
+    <title>Projeto AR - Tiranossauro</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -52,9 +52,13 @@
 
         <a-entity camera></a-entity>
 
-        <a-entity class="clickable" interactable-model gltf-model="url(./sapo_cibernetico.glb)" scale="0.08 0.08 0.08"
-            rotation="0 0 0" position="0 0 -2">
-        </a-entity>
+        <a-marker preset="hiro">
+
+            <a-entity class="clickable" interactable-model gltf-model="url(./tiranosaurus.glb)" scale="0.08 0.08 0.08"
+                rotation="0 0 0" position="0 0 0">
+            </a-entity>
+
+        </a-marker>
 
     </a-scene>
 

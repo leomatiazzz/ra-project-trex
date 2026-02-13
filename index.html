@@ -4,8 +4,11 @@
 <head>
     <title>Projeto AR - Tiranossauro</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#000000">
+    <meta name="description" content="Projeto AR Tiranossauro - Interaja com o dinossauro em Realidade Aumentada">
 
     <!-- A-Frame núcleo (renderização 3D) -->
     <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
@@ -26,45 +29,61 @@
             init: function () {
                 var el = this.el;
                 var isScaled = false;
-                var lastClickTime = 0;
+                var lastInteractionTime = 0;
+                var originalScale = null;
+                var modelLoaded = false;
 
                 // Aguarda que o modelo carregue antes de capturar scale
                 el.addEventListener('model-loaded', function () {
-                    var scale = el.getAttribute('scale');
-                    var originalScale = { x: scale.x, y: scale.y, z: scale.z };
-
-                    // Interação 1: Clique simples para aumentar/diminuir escala
-                    el.addEventListener('click', function (event) {
-                        event.stopPropagation();
-                        var currentTime = new Date().getTime();
-
-                        // Detecta duplo clique
-                        if ((currentTime - lastClickTime) < 300) {
-                            // Duplo clique - rotação
-                            el.setAttribute('animation__rotate', {
-                                property: 'rotation',
-                                from: { x: 0, y: 0, z: 0 },
-                                to: { x: 0, y: 360, z: 0 },
-                                dur: 2000,
-                                easing: 'linear'
-                            });
-                        } else {
-                            // Clique simples - aumentar/diminuir tamanho
-                            if (!isScaled) {
-                                el.setAttribute('scale', {
-                                    x: originalScale.x * 1.3,
-                                    y: originalScale.y * 1.3,
-                                    z: originalScale.z * 1.3
-                                });
-                                isScaled = true;
-                            } else {
-                                el.setAttribute('scale', originalScale);
-                                isScaled = false;
-                            }
-                        }
-                        lastClickTime = currentTime;
-                    });
+                    try {
+                        var scale = el.getAttribute('scale');
+                        originalScale = { x: scale.x, y: scale.y, z: scale.z };
+                        modelLoaded = true;
+                        console.log('Modelo carregado com sucesso');
+                    } catch (error) {
+                        console.error('Erro ao carregar o modelo:', error);
+                    }
                 });
+
+                // Função para lidar com interações (clique ou toque)
+                function handleInteraction(event) {
+                    if (!modelLoaded || !originalScale) return;
+
+                    event.stopPropagation();
+                    var currentTime = new Date().getTime();
+
+                    // Detecta duplo clique/toque
+                    if ((currentTime - lastInteractionTime) < 300) {
+                        // Duplo clique/toque - rotação
+                        el.setAttribute('animation__rotate', {
+                            property: 'rotation',
+                            from: { x: 0, y: 0, z: 0 },
+                            to: { x: 0, y: 360, z: 0 },
+                            dur: 2000,
+                            easing: 'linear'
+                        });
+                    } else {
+                        // Clique/toque simples - aumentar/diminuir tamanho
+                        if (!isScaled) {
+                            el.setAttribute('scale', {
+                                x: originalScale.x * 1.3,
+                                y: originalScale.y * 1.3,
+                                z: originalScale.z * 1.3
+                            });
+                            isScaled = true;
+                        } else {
+                            el.setAttribute('scale', originalScale);
+                            isScaled = false;
+                        }
+                    }
+                    lastInteractionTime = currentTime;
+                }
+
+                // Suporte para cliq em desktop/browser
+                el.addEventListener('click', handleInteraction);
+
+                // Suporte para touch em dispositivos móveis
+                el.addEventListener('touchstart', handleInteraction);
             }
         });
     </script>
@@ -77,7 +96,7 @@
 
         <!-- Câmera controlada pelo AR.js -->
         <a-entity camera>
-            <a-cursor rayOrigin="mouse" fuse="false" raycaster="objects: .clickable">
+            <a-cursor rayOrigin="entity" fuse="false" raycaster="objects: .clickable">
             </a-cursor>
         </a-entity>
 

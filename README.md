@@ -21,7 +21,7 @@ Um projeto de Realidade Aumentada (RA) interativo baseado na web. Esta aplicaç�
 
 1. Faça o clone deste repositório para a sua máquina local.
 2. Como o projeto utiliza acesso à câmera, os navegadores exigem que ele seja executado em um ambiente seguro (HTTPS) ou via `localhost` para evitar bloqueios de CORS.
-   * **Localmente:** Utilize uma extensão como o **Live Server** no VS Code.
+   * **Localmente:** Acesse o link do deploy: (https://leomatias-trex.netlify.app/)  ou utilize uma extensão como o **Live Server** no VS Code.
    * **Nuvem:** Você pode realizar o deploy da aplicação estática em serviços de computação em nuvem (como um bucket no AWS S3).
 3. Acesse a página `index.html` através de um navegador em seu smartphone ou computador com webcam.
 4. Conceda as permissões solicitadas para uso da câmera.
